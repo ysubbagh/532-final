@@ -30,7 +30,7 @@ def send_email(body):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
-# Main function
+#main, check distance and send email if needed
 def main():
     device_id = 0
     distance = fetch_distance(device_id)
