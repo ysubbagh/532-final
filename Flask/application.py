@@ -49,7 +49,7 @@ def index():
     # Compute percentage and status for each tank
     tank_status = {}
     for tank, level in water_levels.items():
-        percentage = (level / MAX_LEVEL) * 100
+        percentage = MAX_LEVEL - (level / MAX_LEVEL) * 100
         if percentage >= 80:
             status = "high"  # Green thumbs-up
         elif percentage <= 20:

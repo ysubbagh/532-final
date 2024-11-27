@@ -16,8 +16,8 @@
             font-family: Arial, sans-serif;
         }
         h1 {
-            margin-top: 10px; /* Reduces space above the title */
-            margin-bottom: 30px; /* Ensures space between title and tanks */
+            margin-top: 10px; /* Reduce or remove margin-top */
+            margin-bottom: 30px; /* Ensure space between title and tanks */
             color: #333;
         }
         .tanks {
@@ -85,7 +85,7 @@
             <div class="icon low">👎</div> <!-- Red Thumbs-Down -->
             {% endif %}
             <div class="drum">
-                <div class="water" style="height: {{ (data.level / 89) * 100 }}%; --water-level: {{ (data.level / 89) * 300 }}px;"> 
+                <div class="water" style="height: {{ (89 - data.level) / 89 * 100 }}%; --water-level: {{ (89 - data.level) / 89 * 300 }}px;">
                 </div>
             </div>
             <div class="label">{{ tank|capitalize }} ({{ data.level }} cm)</div>
