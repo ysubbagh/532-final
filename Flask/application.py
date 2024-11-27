@@ -21,24 +21,24 @@ def fetch_water_levels():
     water_levels = {}
     for tank, device_id in TANK_DEVICE_IDS.items():
         try:
-            # Construct the API URL for the tank
+            # append device_id to the API URL for the tank and get the response
             url = f"{API_URL}{device_id}"
             response = requests.get(url)
             response.raise_for_status()
             data = response.json()
             
-            # Extract distance from the response
+            # get distance from the response
             if isinstance(data, list) and len(data) > 0:
                 payload = data[0].get("payload", {})
-                distance = payload.get("distance", None)  # Return None if distance is not found
+                distance = payload.get("distance", None)  # base case none
             else:
                 distance = None
             
             # Add the tank's level to the dictionary
-            water_levels[tank] = distance if distance is not None else 0  # Default to 0 if unavailable
+            water_levels[tank] = distance if distance is not None else 0  # base case 0
         except requests.exceptions.RequestException as e:
             print(f"Error fetching data for {tank}: {e}")
-            water_levels[tank] = 0  # Default to 0 in case of an error
+            water_levels[tank] = 0  # base case  0 
     return water_levels
 
 @application.route("/")
@@ -51,11 +51,11 @@ def index():
     for tank, level in water_levels.items():
         percentage = MAX_LEVEL - (level / MAX_LEVEL) * 100
         if percentage >= 80:
-            status = "high"  # Green thumbs-up
+            status = "high"  # thumbs-up
         elif percentage <= 20:
-            status = "low"  # Red thumbs-down
+            status = "low"  # thumbs-down
         else:
-            status = "normal"  # No icon
+            status = "normal"  
         tank_status[tank] = {"level": level, "percentage": percentage, "status": status}
 
     #debug 
@@ -63,6 +63,7 @@ def index():
     print("Templates Directory:", application.template_folder)
     print("Absolute Path to Templates Directory:", os.path.abspath(application.template_folder))
 
+    # send to front end
     water_percentages = {tank: (level / MAX_LEVEL) * 100 for tank, level in water_levels.items()}
     return render_template('index.html', tank_status=tank_status)
 
