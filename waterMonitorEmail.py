@@ -9,12 +9,12 @@ WARNING_ADJUST = 10 # lil more than 10%
 # Email creds
 to_email = "ysubbagh@gmail.com"  
 from_email = "ydns10@gmail.com"  
-password = "yasminesubbagh"     
+password = "wuil fsqq pmjk eadf"     
 
-# AWS REST API URL 
+# aws api gateway url
 API_URL = "https://w8wla8op08.execute-api.us-east-1.amazonaws.com/prod/data?device_id={device_id}"
 
-# Tank IDs to monitor
+#device ids for the tanks
 TANKS = [1, 2, 3]  
 
 # Fetch distance from AWS REST API given the device_id

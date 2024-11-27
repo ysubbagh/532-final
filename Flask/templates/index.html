@@ -7,54 +7,88 @@
     <style>
         body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background: linear-gradient(to bottom, #87CEEB, #f0f0f0);
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-top: 10px; /* Reduces space above the title */
+            margin-bottom: 30px; /* Ensures space between title and tanks */
+            color: #333;
         }
         .tanks {
             display: flex;
-            gap: 20px;
+            gap: 30px;
         }
-        .tank {
-            width: 200px;
-            height: 400px;
-            border: 2px solid #000;
+        .tank-container {
             position: relative;
-            background-color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .drum {
+            width: 150px;
+            height: 300px; /* The height of the drum */
+            background: linear-gradient(to bottom, #d3d3d3, #a9a9a9);
+            border: 2px solid #555;
+            border-radius: 75px 75px 10px 10px; /* Round top edges for a drum shape */
+            position: relative;
+            overflow: hidden;
         }
         .water {
-            width: 100%;
             position: absolute;
             bottom: 0;
-            background-color: #00f;
-            transition: height 0.5s;
-            text-align: center;
-            font-weight: bold;
-            color: white;
-            font-size: 1.2em;
-            line-height: 1.5;
+            width: 100%;
+            background: linear-gradient(to top, #007BFF, #1E90FF);
+            clip-path: polygon(
+                0% 100%, 
+                100% 100%, 
+                100% calc(100% - var(--water-level)), 
+                0% calc(100% - var(--water-level))
+            );
+            transition: height 2s ease-in-out, clip-path 2s ease-in-out;
         }
         .label {
-            margin-top: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
             text-align: center;
+            margin-top: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .icon {
+            position: absolute;
+            top: -50px; /* Place above the drum */
+            font-size: 2em;
+            display: none; /* Hide by default */
+        }
+        .icon.high {
+            color: green;
+            display: block;
+        }
+        .icon.low {
+            color: red;
+            display: block;
         }
     </style>
 </head>
 <body>
     <h1>Water Tank Levels</h1>
     <div class="tanks">
-        {% for tank, level in water_levels.items() %}
-        <div>
-            <div class="tank">
-                <div class="water" style="height: {{ (level / 87.0 * 100) }}%;">
-                    {{ level }} cm
+        {% for tank, data in tank_status.items() %}
+        <div class="tank-container">
+            {% if data.status == "high" %}
+            <div class="icon high">👍</div> <!-- Green Thumbs-Up -->
+            {% elif data.status == "low" %}
+            <div class="icon low">👎</div> <!-- Red Thumbs-Down -->
+            {% endif %}
+            <div class="drum">
+                <div class="water" style="height: {{ (data.level / 89) * 100 }}%; --water-level: {{ (data.level / 89) * 300 }}px;"> 
                 </div>
             </div>
-            <div class="label">{{ tank|capitalize }}</div>
+            <div class="label">{{ tank|capitalize }} ({{ data.level }} cm)</div>
         </div>
         {% endfor %}
     </div>

@@ -2,6 +2,8 @@ from flask import Flask, render_template, jsonify
 import requests
 import os
 
+MAX_LEVEL = 89  # Distance when the tank is empty (in cm)
+
 application = Flask(__name__, template_folder='templates')
 
 # URL to my AWS API Gateway endpoint
@@ -41,14 +43,28 @@ def fetch_water_levels():
 
 @application.route("/")
 def index():
+    # get distance
     water_levels = fetch_water_levels()
+
+    # Compute percentage and status for each tank
+    tank_status = {}
+    for tank, level in water_levels.items():
+        percentage = (level / MAX_LEVEL) * 100
+        if percentage >= 80:
+            status = "high"  # Green thumbs-up
+        elif percentage <= 20:
+            status = "low"  # Red thumbs-down
+        else:
+            status = "normal"  # No icon
+        tank_status[tank] = {"level": level, "percentage": percentage, "status": status}
 
     #debug 
     print("Fetched Water Levels:", water_levels)
     print("Templates Directory:", application.template_folder)
     print("Absolute Path to Templates Directory:", os.path.abspath(application.template_folder))
 
-    return render_template("index.html", water_levels=water_levels)
+    water_percentages = {tank: (level / MAX_LEVEL) * 100 for tank, level in water_levels.items()}
+    return render_template('index.html', tank_status=tank_status)
 
 if __name__ == "__main__":
     application.run(debug=True)
