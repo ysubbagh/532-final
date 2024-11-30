@@ -10,4 +10,7 @@ HARDWARE + CODE BASE CONFIGURATION
     The secrets have been removed from the file (replaces by "xxx"). To connect to AWS and post to the supplied sub channel
     the user must input their internet SSID and password, from there the device will connect to the internet. Next, the user 
     needs to input their AWS IoT Core endpoint, CA, and certifiacte and key that was provided when the devices thing was created
-    on AWS IoT Core Hub.   
+    on AWS IoT Core Hub.  
+
+- Code needs to be pushed onto the device. Once plugged into the permamnted power source, press the BOOT button to turn the 
+    device on and begin uploading to AWS. 

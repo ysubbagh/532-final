@@ -1,0 +1,64 @@
+AWS CLOUD SERVICES CONFIGURATION
+* note all services need to be given the correct permissions to access and modify one another 
+* also note cloud usage via this method stays within the free tier
+
+---DyanmoDB---
+- Create a table with a "device_id" (number) as the key 
+
+---IoT Core---
+- Create things for each of the devices (3)
+- Messages from the (3) devices will be sent here initially.
+    Each device will post to it's own topic, ex "water1/pub" or "water2/pub"
+- Create a message routing rule to reroute all messages to the DyanmoDB table, using the topic number as the device_id key value.
+    Ex. messages to "water1/pub" with have device_id of 1 
+
+---Lambda Function---
+- The lambda function will support the API Gateway call to get data from DyanmoDB
+- The code used in the lambda function can be found in lambdaFunc.py
+- The function is passed a device_id variable, the function retrvieves the distance value for that device and returns a JSON message 
+    with the device_id and the most recent distance value in the DynamoDB table supplied by the devies via IoT Core.
+
+---API Gateway---
+- The API gateway calls the lambda function given a device_id. The function can then be called through an API call within the 
+    python email script and for data retrival on the backend of the web app. A GET call needs to be created and staged for successful
+    execution.
+    Create a api gateway using the lambda function, passing device_id as a parameter to a GET call. 
+
+---EC2---
+- The EC2 server supports the 2 main user accessed applications and notifications 
+- Firstly, a cron job is created to run the email notifitaion script every 30 minutes 
+    */30 * * * * python3 waterMonitorEmail.py
+    If the water levels are 20% till empty or full the supplied email address will be emailed notifiting them that the induviudal
+    tank is either almost full or empty and will also supply the exact percent the water level is at. This email is seperate for 
+    each tank, so if each tank is almost full, the user will get 3 emails; if all the tanks are half full, no emails will be sent.
+    The server needs to run cron in background to ensure it is continously running. Give cron reboot persistance. 
+    And cron needs to be given execution rights to the file.
+    Note, the passowrd to the email has been removed for security (now "xxx").
+- Secondly, the flask web application is hosted on the same server (http://54.146.165.86/). 
+    To do so, run the app on gunicorn, and make sure to have it running in the background continously, given reboot perstitance.
+    Give gunicorn configuration access (seen below) and and start the service. 
+    The web app is a flask app that has a python back end that supports the front end. The front end displays the water levels 
+    of the three tanks, but has signifiers of thumbs up or down for near full or empty. The back end makes api calls, retriving 
+    the data from AWS to support the front end.
+ 
+
+    
+[Unit]
+Description=gunicorn daemon for Flask application
+After=network.target
+
+[Service]
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/app
+ExecStart=/home/ec2-user/app/venv/bin/gunicorn --workers 3 --bind unix:/home/ec2-user/app/app.sock application:application
+
+Restart=always
+RestartSec=3
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target
+
+
+
