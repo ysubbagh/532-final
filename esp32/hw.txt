@@ -1,0 +1,13 @@
+HARDWARE + CODE BASE CONFIGURATION
+
+---HARDWARE---
+- Required is a esp32 with a ultrasonic sensor connected 
+    (not to connect to the 5v pin and not the 3.2v pin or measurment read will not be accurate)
+- Device should be mounted to the top of the water tank and the sensor should be facing down towards the water/bottom of the drum.
+
+---CODE BASE---
+- The connect_aws.ino file does the brunt of the work but reiles on the secrets within the secrets.h file. 
+    The secrets have been removed from the file (replaces by "xxx"). To connect to AWS and post to the supplied sub channel
+    the user must input their internet SSID and password, from there the device will connect to the internet. Next, the user 
+    needs to input their AWS IoT Core endpoint, CA, and certifiacte and key that was provided when the devices thing was created
+    on AWS IoT Core Hub.   
